@@ -1,5 +1,6 @@
 import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
+import "./EmailForm.css";
 
 const defaultFormState = {
     from: '',
@@ -7,9 +8,28 @@ const defaultFormState = {
     to: '',
     subject: ''
 };
+
+const ButtonBarWrapper = ({onCancel, shouldShowCancel}) => {
+    let cancelButton;
+
+    if (shouldShowCancel) {
+      cancelButton = (
+        <button onClick={onCancel}>Cancel</button>
+      )
+    }
+
+    return (
+      <footer className="email-form__button-bar">
+        <button type="submit">Send email</button>
+        {cancelButton}
+      </footer>
+    );
+};
+
 export default class EmailForm extends PureComponent {
   static propTypes = {
-    onSubmit: PropTypes.func.isRequired
+    onSubmit: PropTypes.func.isRequired,
+    onCancel: PropTypes.func
   }
 
   state = defaultFormState
@@ -34,13 +54,22 @@ export default class EmailForm extends PureComponent {
     }
   }
 
+  _handleFormCancel() {
+    const { onCancel } = this.props;
+
+    this.setState(defaultFormState);
+    onCancel();
+  }
   render() {
     const { from, message, to, subject } = this.state;
+    const { onCancel } = this.props;
+
     return (
       <form className="email-form" onSubmit={this._handleFormSubmit.bind(this)}>
-        <fieldset>
-          <label htmlFor="from">From:</label>
+        <fieldset className="email-form-field">
+          <label className="email-form__label" htmlFor="from">From:</label>
           <input
+            className="email-form__input"
             type="email"
             id="from"
             value={from}
@@ -48,9 +77,10 @@ export default class EmailForm extends PureComponent {
             onChange={this._updateFormFieldState.bind(this, 'from')}
           />
         </fieldset>
-        <fieldset>
-          <label htmlFor="to">To:</label>
+        <fieldset className="email-form-field">
+          <label className="email-form__label" htmlFor="to">To:</label>
           <input
+            className="email-form__input"
             type="email"
             id="to"
             value={to}
@@ -58,9 +88,10 @@ export default class EmailForm extends PureComponent {
             onChange={this._updateFormFieldState.bind(this, 'to')}
           />
         </fieldset>
-        <fieldset>
-          <label htmlFor="subject">Subject:</label>
+        <fieldset className="email-form-field">
+          <label className="email-form__label" htmlFor="subject">Subject:</label>
           <input
+            className="email-form__input"
             type="text"
             id="subject"
             value={subject}
@@ -68,17 +99,18 @@ export default class EmailForm extends PureComponent {
             onChange={this._updateFormFieldState.bind(this, 'subject')}
           />
         </fieldset>
-        <fieldset>
-          <label htmlFor="message">Message:</label>
+        <fieldset className="email-form-field">
+          <label className="email-form__label" htmlFor="message">Message:</label>
           <textarea
+            className="email-form__input-message"
             id="message"
             value={message}
             placeholder="[Insert message here]"
             onChange={this._updateFormFieldState.bind(this, 'message')}
           />
         </fieldset>
-        <button type="submit">Send Email</button>
-      </form>
+        <ButtonBarWrapper onCancel={this._handleFormCancel.bind(this)} shouldShowCancel={!!onCancel}/>
+        </form>
     );
   }
 }

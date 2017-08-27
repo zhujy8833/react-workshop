@@ -1,12 +1,51 @@
 import React, {PureComponent} from 'react';
-
+import './App.css';
 import EmailList from './components/EmailList';
 import EmailForm from './components/EmailForm';
 import EmailView from './components/EmailView';
-// import EMAILS from './utils/emails';
 import PropTypes from 'prop-types';
+import {
+  addEmail,
+  getEmails,
+  deleteEmail,
+  toggleEmailUnread
+} from './action-reducer';
 
 const defaultInterval = 5000;
+
+const EmailViewWrapper = ({selectedEmail, onClose, onDelete, onMarkRead, onMarkUnread}) => {
+    let emailViewComponent = null;
+
+    if (selectedEmail) {
+      emailViewComponent = (
+        <article className="app__view">
+          <EmailView
+            email={selectedEmail}
+            onClose={onClose}
+            onDelete={onDelete}
+            onMarkRead={onMarkRead}
+            onMarkUnread={onMarkUnread}
+          />
+        </article>
+      )
+    }
+
+    return emailViewComponent
+};
+
+const EmailFormWrapper = ({showForm, onFormSubmit, onFormCancel}) => {
+  let emailFormComponent = null;
+
+  if (showForm) {
+    emailFormComponent = (
+      <div className="app__form">
+        <EmailForm onSubmit={onFormSubmit} onCancel={onFormCancel}/>
+      </div>
+    );
+  }
+
+  return emailFormComponent;
+};
 
 export default class App extends PureComponent {
   static protoTypes = {
@@ -20,7 +59,7 @@ export default class App extends PureComponent {
   state = {
     emails: [],
     selectedEmailId: -1,
-    closeView: false,
+    showForm: false
   }
 
   componentDidMount() {
@@ -37,10 +76,7 @@ export default class App extends PureComponent {
   }
 
   _pollEmails() {
-    fetch('//localhost:9090/emails')
-      .then((res) => res.json())
-      .then(emails => this.setState({emails}))
-      .catch(e => console.log(e))
+    getEmails().then(emails => this.setState({emails}));
   }
 
   _handleItemSelect(emailId) {
@@ -56,97 +92,37 @@ export default class App extends PureComponent {
   }
 
   _handleFormSubmit(newEmail) {
-    console.log('submit');
     const { emails } = this.state;
 
-    fetch('//localhost:9090/emails', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(newEmail)
-    })
-      .then(res => res.json())
-      .then(({success}) => {
-        if (!success) {
-          throw new Error('Unable to send email!');
-        } else {
-          this.setState(({ emails }) => {
-            const newEmails = [{
-              ...newEmail,
-              id: Date.now(),
-              date: `${new Date()}`,
-              unread: true
-            }, ...emails];
-
-            return {
-              emails: newEmails
-            }
-          });
-        }
-      })
-      .catch(ex => console.error(ex));
+    addEmail(newEmail, emails)
+      .then(emails => this.setState({
+        emails,
+        showForm: false
+      }));
   }
 
   _handleItemDelete(emailId) {
     const { emails, selectedEmailId } = this.state;
 
-    fetch(`//localhost:9090/emails/${emailId}`, {
-      method: 'DELETE'
-    })
-    .then(res => res.json())
-    .then(({success}) => {
-      if (!success) {
-        throw new Error(`Unable to delete email ID# ${emailId}.`);
-      } else {
-        const emailToDeleteIndex = emails.findIndex(({id}) => id === emailId);
-
-        if (selectedEmailId === emailId ) {
-          this.setState({ selectedEmailId: -1});
-        }
-        if (emailToDeleteIndex >= 0) {
-          this.setState(({ emails }) => {
-            const copyEmails = emails.slice();
-            copyEmails.splice(emailToDeleteIndex, 1);
-            return {
-              emails: copyEmails
-            }
+    deleteEmail(emailId, emails)
+      .then(({emailToDeleteIndex, emails}) => {
+        if (selectedEmailId === emailId) {
+          this.setState({
+            selectedEmailId: -1
           });
         }
-      }
-    })
-    .catch(ex => console.error(ex));
+        if (emailToDeleteIndex >= 0) {
+          this.setState({emails});
+        }
+      });
   }
 
   _setUnread(emailId, unread = true) {
     // Make a PUT request to update unread state
     const { emails } = this.state;
 
-    fetch(`//localhost:9090/emails/${emailId}`, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({unread})
-    })
-    .then(res => res.json())
-    .then(({success}) => {
-      if (!success) {
-        throw new Error(
-          `Unable to set email ID# ${emailId} unread state to ${unread}.`
-        );
-      } else {
-        const newEmails = emails.map(email => email.id ===emailId ? {...email, unread } : email );
-
-        this.setState(({ emails }) => {
-          return { emails: newEmails };
-        });
-        //return { emails: newEmails };
-      }
-    })
-    .catch(ex => console.error(ex));
+    toggleEmailUnread(emailId, unread, emails)
+      .then(emails => this.setState({emails}));
   }
 
   _handleItemMarkRead(emailId) {
@@ -157,32 +133,50 @@ export default class App extends PureComponent {
     this._setUnread(emailId, true);
   }
 
+  _handleShowForm() {
+    this.setState({showForm: true});
+  }
+
+  _handleFormCancel() {
+    this.setState({showForm: false});
+  }
+
   render() {
-    const { emails , selectedEmailId } = this.state;
+    const { emails , selectedEmailId, showForm } = this.state;
     const selectedEmail = emails.find(({id}) => id === selectedEmailId);
-
-    let emailView;
-
-    if (selectedEmail) {
-      emailView = <EmailView email={selectedEmail}
-        onClose={this._handleOnClose.bind(this)}
-        onDelete={this._handleItemDelete.bind(this)}
-        onMarkRead={this._handleItemMarkRead.bind(this)}
-        onMarkUnread={this._handleItemMarkUnread.bind(this)}
-      />
-    }
 
     return(
       <main className="app">
-        <EmailList
-          emails={emails}
-          selectedEmailId={selectedEmailId}
-          onItemSelect={this._handleItemSelect.bind(this)}
-          onItemDelete={this._handleItemDelete.bind(this)}
-          onMarkUnread={this._handleItemMarkUnread.bind(this)}
-        />
-        {emailView}
-        <EmailForm onSubmit={this._handleFormSubmit.bind(this)}/>
+        <div className="app__page">
+          <div className="app__list">
+            <EmailList
+              className="app__list"
+              emails={emails}
+              selectedEmailId={selectedEmailId}
+              onItemSelect={this._handleItemSelect.bind(this)}
+              onItemDelete={this._handleItemDelete.bind(this)}
+              onMarkUnread={this._handleItemMarkUnread.bind(this)}
+            />
+          </div>
+          <EmailViewWrapper
+            selectedEmail={selectedEmail}
+            onClose={this._handleOnClose.bind(this)}
+            onDelete={this._handleItemDelete.bind(this)}
+            onMarkRead={this._handleItemMarkRead.bind(this)}
+            onMarkUnread={this._handleItemMarkUnread.bind(this)}
+          />
+          <button
+            className="app__new-email"
+            onClick={this._handleShowForm.bind(this)}
+          >
+            +
+          </button>
+          <EmailFormWrapper
+            showForm={showForm}
+            onFormSubmit={this._handleFormSubmit.bind(this)}
+            onFormCancel={this._handleFormCancel.bind(this)}
+          />
+        </div>
       </main>
     );
   }

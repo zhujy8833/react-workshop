@@ -2,6 +2,7 @@ import React, {PureComponent} from 'react';
 import EmailListItem from './EmailListItem';
 import PropTypes from 'prop-types';
 import { EMAIL_PROP_TYPE } from '../utils/constants';
+import './EmailList.css';
 
 export default class EmailList extends PureComponent {
   static propTypes = {
@@ -16,7 +17,7 @@ export default class EmailList extends PureComponent {
     const { emails, selectedEmailId } = this.props;
 
     const emailComponent = emails.map(email =>
-      <li key={email.id}>
+      <li className="email-list__item" key={email.id}>
         <EmailListItem
           email={email}
           onSelect={this.props.onItemSelect}

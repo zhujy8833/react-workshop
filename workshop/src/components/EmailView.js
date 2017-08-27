@@ -1,6 +1,23 @@
 import React, {PureComponent} from 'react';
 import { EMAIL_PROP_TYPE } from '../utils/constants';
 import PropTypes from 'prop-types';
+import "./EmailView.css";
+
+const EmailViewButtonBar = ({unread, onMardRead, onMarkUnread, onClose, onDelete}) => {
+    const markUnreadButton = unread ? (
+      <button onClick={onMardRead}>Mark Read</button>
+    ) : (
+      <button onClick={onMarkUnread}>Mark Unread</button>
+    )
+
+    return (
+      <div className="email-view__button-bar">
+        <button onClick={onDelete}>Delete Me!</button>
+        {markUnreadButton}
+        <button className="close-it" onClick={onClose}>Close Me!</button>
+      </div>
+    );
+};
 
 export default class EmailView extends PureComponent {
   static propTypes = {
@@ -47,21 +64,19 @@ export default class EmailView extends PureComponent {
     const { from, subject, message, date, unread } = this.props.email;
     const rawMessage = {__html: message};
 
-    const markUnreadButton = unread ? (
-      <button onClick={this._handleMarkRead.bind(this)}>Mark Read</button>
-    ) : (
-      <button onClick={this._handleMarkUnread.bind(this)}>Mark Unread</button>
-    )
-
     return (
       <div className="email-view">
         <h1>{subject}</h1>
         <h2>From: <a href={`mailto:${from}`}>{from}</a></h2>
         <h3>{date}</h3>
         <div dangerouslySetInnerHTML={rawMessage}/>
-        <button className="close-it" onClick={this._handleOnClose.bind(this)}>Close Me!</button>
-        <button onClick={this._handleOnDelete.bind(this)}>Delete Me!</button>
-        {markUnreadButton}
+        <EmailViewButtonBar
+          unread={unread}
+          onMardRead={this._handleMarkRead.bind(this)}
+          onMarkUnread={this._handleMarkUnread.bind(this)}
+          onClose={this._handleOnClose.bind(this)}
+          onDelete={this._handleOnDelete.bind(this)}
+        />
       </div>
     );
   }
