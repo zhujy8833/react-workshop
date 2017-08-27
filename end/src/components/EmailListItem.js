@@ -27,7 +27,6 @@ export default class EmailListItem extends PureComponent {
     onDelete: PropTypes.func.isRequired,
     onMarkUnread: PropTypes.func.isRequired,
     onSelect: PropTypes.func,
-
     isSelected: PropTypes.bool
   };
 
