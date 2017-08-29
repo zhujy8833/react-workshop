@@ -1,7 +1,7 @@
 // @flow
 
 export type EmailType = {
-  id: string,
+  id: number,
   date: ?string,
   from: string,
   subject: string,

@@ -154,7 +154,7 @@ export default class App extends React.Component<Props, State> {
     this.setState({showForm: false});
   }
 
-  _sortEmailsByUnread(emails: Array<EmailType>) {
+  _sortEmailsByUnread(emails: Array<EmailType>): Array<EmailType> {
     return sortBy(emails, (email) => !email.unread);
   }
 
