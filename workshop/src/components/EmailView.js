@@ -1,6 +1,6 @@
-import React, {PureComponent} from 'react';
-import { EMAIL_PROP_TYPE } from '../utils/constants';
-import PropTypes from 'prop-types';
+// @flow
+import * as React from 'react';
+import type { EMAIL_PROP_TYPE } from '../utils/constants';
 import "./EmailView.css";
 
 const EmailViewButtonBar = ({unread, onMardRead, onMarkUnread, onClose, onDelete}) => {
@@ -19,16 +19,17 @@ const EmailViewButtonBar = ({unread, onMardRead, onMarkUnread, onClose, onDelete
     );
 };
 
-export default class EmailView extends PureComponent {
-  static propTypes = {
-    email: EMAIL_PROP_TYPE,
-    onClose: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired,
-    onMarkRead: PropTypes.func.isRequired,
-    onMarkUnread: PropTypes.func.isRequired
-  }
+type Props = {
+  email: EMAIL_PROP_TYPE,
+  onClose: Function,
+  onDelete: Function,
+  onMarkRead: Function,
+  onMarkUnread: Function
+}
 
-  _handleOnClose() {
+export default class EmailView extends React.Component<Props> {
+
+  _handleOnClose = () => {
     const { onClose } = this.props;
 
     if (onClose) {
@@ -36,7 +37,7 @@ export default class EmailView extends PureComponent {
     }
   }
 
-  _handleOnDelete() {
+  _handleOnDelete = () => {
     const { onDelete, email: { id: emailId } } = this.props;
 
     if (onDelete) {
@@ -44,7 +45,7 @@ export default class EmailView extends PureComponent {
     }
   }
 
-  _handleMarkRead() {
+  _handleMarkRead = () => {
     const { onMarkRead, email: { id: emailId } } = this.props;
 
     if (onMarkRead) {
@@ -52,7 +53,7 @@ export default class EmailView extends PureComponent {
     }
   }
 
-  _handleMarkUnread() {
+  _handleMarkUnread = () => {
     const { onMarkUnread, email: { id: emailId } } = this.props;
 
     if (onMarkUnread) {
@@ -72,10 +73,10 @@ export default class EmailView extends PureComponent {
         <div dangerouslySetInnerHTML={rawMessage}/>
         <EmailViewButtonBar
           unread={unread}
-          onMardRead={this._handleMarkRead.bind(this)}
-          onMarkUnread={this._handleMarkUnread.bind(this)}
-          onClose={this._handleOnClose.bind(this)}
-          onDelete={this._handleOnDelete.bind(this)}
+          onMardRead={this._handleMarkRead}
+          onMarkUnread={this._handleMarkUnread}
+          onClose={this._handleOnClose}
+          onDelete={this._handleOnDelete}
         />
       </div>
     );

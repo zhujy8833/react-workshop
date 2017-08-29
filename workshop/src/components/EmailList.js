@@ -1,17 +1,19 @@
-import React, {PureComponent} from 'react';
+// @flow
+import * as React from 'react';
 import EmailListItem from './EmailListItem';
 import PropTypes from 'prop-types';
-import { EMAIL_PROP_TYPE } from '../utils/constants';
+import type { EMAIL_PROP_TYPE } from '../utils/constants';
 import './EmailList.css';
 
-export default class EmailList extends PureComponent {
-  static propTypes = {
-    emails: PropTypes.arrayOf(EMAIL_PROP_TYPE).isRequired,
-    onItemSelect: PropTypes.func.isRequired,
-    onItemDelete: PropTypes.func.isRequired,
-    onMarkUnread: PropTypes.func.isRequired,
-    selectedEmailId: PropTypes.number
-  }
+type Props = {
+  emails: Array<EMAIL_PROP_TYPE>,
+  onItemDelete: Function,
+  onItemSelect: Function,
+  onMarkUnread: Function,
+  selectedEmailId: ?number
+}
+
+export default class EmailList extends React.Component<Props> {
 
   render() {
     const { emails, selectedEmailId } = this.props;

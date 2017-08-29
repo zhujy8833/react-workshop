@@ -1,5 +1,5 @@
-import React, {PureComponent} from 'react';
-import PropTypes from 'prop-types';
+// @flow
+import * as React from 'react';
 import "./EmailForm.css";
 
 const defaultFormState = {
@@ -26,19 +26,28 @@ const ButtonBarWrapper = ({onCancel, shouldShowCancel}) => {
     );
 };
 
-export default class EmailForm extends PureComponent {
-  static propTypes = {
-    onSubmit: PropTypes.func.isRequired,
-    onCancel: PropTypes.func
-  }
+
+type Props = {
+  onSubmit: Function,
+  onCancel: Function
+}
+
+type State = {
+    from: string,
+    message: string,
+    to: string,
+    subject: string
+}
+
+export default class EmailForm extends React.Component<Props, State> {
 
   state = defaultFormState
 
-  _updateFormFieldState(name, e) {
+  _updateFormFieldState(name: string, e: SyntheticInputEvent<HTMLInputElement>) {
     this.setState({[name]: e.target.value});
   }
 
-  _handleFormSubmit(e) {
+  _handleFormSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { from, to, subject, message } = this.state;
     const { onSubmit } = this.props;
@@ -54,18 +63,19 @@ export default class EmailForm extends PureComponent {
     }
   }
 
-  _handleFormCancel() {
+  _handleFormCancel = () => {
     const { onCancel } = this.props;
 
     this.setState(defaultFormState);
     onCancel();
   }
+
   render() {
     const { from, message, to, subject } = this.state;
     const { onCancel } = this.props;
 
     return (
-      <form className="email-form" onSubmit={this._handleFormSubmit.bind(this)}>
+      <form className="email-form" onSubmit={this._handleFormSubmit}>
         <fieldset className="email-form-field">
           <label className="email-form__label" htmlFor="from">From:</label>
           <input
@@ -109,7 +119,7 @@ export default class EmailForm extends PureComponent {
             onChange={this._updateFormFieldState.bind(this, 'message')}
           />
         </fieldset>
-        <ButtonBarWrapper onCancel={this._handleFormCancel.bind(this)} shouldShowCancel={!!onCancel}/>
+        <ButtonBarWrapper onCancel={this._handleFormCancel} shouldShowCancel={!!onCancel}/>
         </form>
     );
   }
