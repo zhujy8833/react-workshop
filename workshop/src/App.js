@@ -10,6 +10,7 @@ import {
   deleteEmail,
   toggleEmailUnread
 } from './action-reducer';
+import sortBy from 'lodash/sortBy';
 
 const defaultInterval = 5000;
 
@@ -141,6 +142,10 @@ export default class App extends PureComponent {
     this.setState({showForm: false});
   }
 
+  _sortEmailsByUnread(emails) {
+    return sortBy(emails, (email) => !email.unread);
+  }
+
   render() {
     const { emails , selectedEmailId, showForm } = this.state;
     const selectedEmail = emails.find(({id}) => id === selectedEmailId);
@@ -151,7 +156,7 @@ export default class App extends PureComponent {
           <div className="app__list">
             <EmailList
               className="app__list"
-              emails={emails}
+              emails={this._sortEmailsByUnread(emails)}
               selectedEmailId={selectedEmailId}
               onItemSelect={this._handleItemSelect.bind(this)}
               onItemDelete={this._handleItemDelete.bind(this)}
