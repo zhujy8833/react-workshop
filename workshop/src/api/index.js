@@ -1,3 +1,4 @@
+// @flow
 const URL = '//localhost:9090/emails';
 
 const _fetchJSON = (url, options = {}) =>

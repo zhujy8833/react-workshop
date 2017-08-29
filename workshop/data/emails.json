@@ -693,6 +693,7 @@
         "from": "test@test.com",
         "to": "jiangyue@ticketfly.com",
         "subject": "this is a test",
-        "message": "hahaha"
+        "message": "hahaha",
+        "deleted": true
     }
 ]

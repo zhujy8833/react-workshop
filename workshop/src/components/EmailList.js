@@ -9,7 +9,7 @@ type Props = {
   onItemDelete: Function,
   onItemSelect: Function,
   onMarkUnread: Function,
-  selectedEmailId: ?number
+  selectedEmailId?: number
 }
 
 export default class EmailList extends React.Component<Props> {

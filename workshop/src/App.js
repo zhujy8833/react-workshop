@@ -1,3 +1,4 @@
+// @flow
 import * as React from 'react';
 import './App.css';
 import EmailList from './components/EmailList';
@@ -50,7 +51,7 @@ const EmailFormWrapper = ({showForm, onFormSubmit, onFormCancel}) => {
 };
 
 type Props = {
-  pollInterval: ?number
+  pollInterval?: number
 }
 
 type State = {
@@ -71,13 +72,16 @@ export default class App extends React.Component<Props, State> {
     showForm: false
   }
 
+  _pollInterval = 0
+
   componentDidMount() {
+    const { pollInterval } = this.props;
 
     this._pollEmails();
 
     this._pollInterval = setInterval(() => {
       this._pollEmails();
-    }, this.props.pollInterval);
+    }, pollInterval);
   }
 
   componentWillUnmount() {
@@ -88,7 +92,7 @@ export default class App extends React.Component<Props, State> {
     getEmails().then(emails => this.setState({emails}));
   }
 
-  _handleItemSelect = (emailId) => {
+  _handleItemSelect = (emailId: number) => {
     this.setState(({selectedEmailId: prevSelectedEmailId}) => {
       return {
         selectedEmailId: emailId === prevSelectedEmailId ? -1 : emailId
@@ -100,7 +104,7 @@ export default class App extends React.Component<Props, State> {
     this.setState({selectedEmailId: -1});
   }
 
-  _handleFormSubmit = (newEmail) => {
+  _handleFormSubmit = (newEmail: EmailType) => {
     const { emails } = this.state;
 
     addEmail(newEmail, emails)
@@ -110,7 +114,7 @@ export default class App extends React.Component<Props, State> {
       }));
   }
 
-  _handleItemDelete = (emailId) => {
+  _handleItemDelete = (emailId: number) => {
     const { emails, selectedEmailId } = this.state;
 
     deleteEmail(emailId, emails)
@@ -126,7 +130,7 @@ export default class App extends React.Component<Props, State> {
       });
   }
 
-  _setUnread(emailId, unread = true) {
+  _setUnread(emailId: number, unread: boolean = true) {
     // Make a PUT request to update unread state
     const { emails } = this.state;
 
@@ -134,11 +138,11 @@ export default class App extends React.Component<Props, State> {
       .then(emails => this.setState({emails}));
   }
 
-  _handleItemMarkRead = (emailId) => {
+  _handleItemMarkRead = (emailId: number) => {
     this._setUnread(emailId, false);
   }
 
-  _handleItemMarkUnread = (emailId) => {
+  _handleItemMarkUnread = (emailId: number) => {
     this._setUnread(emailId, true);
   }
 
@@ -150,7 +154,7 @@ export default class App extends React.Component<Props, State> {
     this.setState({showForm: false});
   }
 
-  _sortEmailsByUnread(emails) {
+  _sortEmailsByUnread(emails: Array<EmailType>) {
     return sortBy(emails, (email) => !email.unread);
   }
 
