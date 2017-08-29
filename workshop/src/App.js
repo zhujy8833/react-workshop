@@ -1,9 +1,10 @@
-import React, {PureComponent} from 'react';
+import * as React from 'react';
 import './App.css';
 import EmailList from './components/EmailList';
 import EmailForm from './components/EmailForm';
 import EmailView from './components/EmailView';
-import PropTypes from 'prop-types';
+import type { EMAIL_PROP_TYPE } from './utils/constants';
+
 import {
   addEmail,
   getEmails,
@@ -48,10 +49,17 @@ const EmailFormWrapper = ({showForm, onFormSubmit, onFormCancel}) => {
   return emailFormComponent;
 };
 
-export default class App extends PureComponent {
-  static protoTypes = {
-    pollInterval: PropTypes.number
-  }
+type Props = {
+  pollInterval: ?number
+}
+
+type State = {
+  emails: Array<EMAIL_PROP_TYPE>,
+  selectedEmailId: number,
+  showForm: boolean
+}
+
+export default class App extends React.Component<Props, State> {
 
   static defaultProps = {
     pollInterval: defaultInterval
@@ -80,7 +88,7 @@ export default class App extends PureComponent {
     getEmails().then(emails => this.setState({emails}));
   }
 
-  _handleItemSelect(emailId) {
+  _handleItemSelect = (emailId) => {
     this.setState(({selectedEmailId: prevSelectedEmailId}) => {
       return {
         selectedEmailId: emailId === prevSelectedEmailId ? -1 : emailId
@@ -88,11 +96,11 @@ export default class App extends PureComponent {
     });
   }
 
-  _handleOnClose() {
+  _handleOnClose = () => {
     this.setState({selectedEmailId: -1});
   }
 
-  _handleFormSubmit(newEmail) {
+  _handleFormSubmit = (newEmail) => {
     const { emails } = this.state;
 
     addEmail(newEmail, emails)
@@ -102,7 +110,7 @@ export default class App extends PureComponent {
       }));
   }
 
-  _handleItemDelete(emailId) {
+  _handleItemDelete = (emailId) => {
     const { emails, selectedEmailId } = this.state;
 
     deleteEmail(emailId, emails)
@@ -126,19 +134,19 @@ export default class App extends PureComponent {
       .then(emails => this.setState({emails}));
   }
 
-  _handleItemMarkRead(emailId) {
+  _handleItemMarkRead = (emailId) => {
     this._setUnread(emailId, false);
   }
 
-  _handleItemMarkUnread(emailId) {
+  _handleItemMarkUnread = (emailId) => {
     this._setUnread(emailId, true);
   }
 
-  _handleShowForm() {
+  _handleShowForm = () => {
     this.setState({showForm: true});
   }
 
-  _handleFormCancel() {
+  _handleFormCancel = () => {
     this.setState({showForm: false});
   }
 
@@ -158,28 +166,28 @@ export default class App extends PureComponent {
               className="app__list"
               emails={this._sortEmailsByUnread(emails)}
               selectedEmailId={selectedEmailId}
-              onItemSelect={this._handleItemSelect.bind(this)}
-              onItemDelete={this._handleItemDelete.bind(this)}
-              onMarkUnread={this._handleItemMarkUnread.bind(this)}
+              onItemSelect={this._handleItemSelect}
+              onItemDelete={this._handleItemDelete}
+              onMarkUnread={this._handleItemMarkUnread}
             />
           </div>
           <EmailViewWrapper
             selectedEmail={selectedEmail}
-            onClose={this._handleOnClose.bind(this)}
-            onDelete={this._handleItemDelete.bind(this)}
-            onMarkRead={this._handleItemMarkRead.bind(this)}
-            onMarkUnread={this._handleItemMarkUnread.bind(this)}
+            onClose={this._handleOnClose}
+            onDelete={this._handleItemDelete}
+            onMarkRead={this._handleItemMarkRead}
+            onMarkUnread={this._handleItemMarkUnread}
           />
           <button
             className="app__new-email"
-            onClick={this._handleShowForm.bind(this)}
+            onClick={this._handleShowForm}
           >
             +
           </button>
           <EmailFormWrapper
             showForm={showForm}
-            onFormSubmit={this._handleFormSubmit.bind(this)}
-            onFormCancel={this._handleFormCancel.bind(this)}
+            onFormSubmit={this._handleFormSubmit}
+            onFormCancel={this._handleFormCancel}
           />
         </div>
       </main>
