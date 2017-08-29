@@ -3,7 +3,7 @@ import './App.css';
 import EmailList from './components/EmailList';
 import EmailForm from './components/EmailForm';
 import EmailView from './components/EmailView';
-import type { EMAIL_PROP_TYPE } from './utils/constants';
+import type { EmailType } from './utils/constants';
 
 import {
   addEmail,
@@ -54,7 +54,7 @@ type Props = {
 }
 
 type State = {
-  emails: Array<EMAIL_PROP_TYPE>,
+  emails: Array<EmailType>,
   selectedEmailId: number,
   showForm: boolean
 }

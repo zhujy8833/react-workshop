@@ -1,6 +1,6 @@
 // @flow
 import * as React from 'react';
-import type { EMAIL_PROP_TYPE } from '../utils/constants';
+import type { EmailType } from '../utils/constants';
 import "./EmailView.css";
 
 const EmailViewButtonBar = ({unread, onMardRead, onMarkUnread, onClose, onDelete}) => {
@@ -20,7 +20,7 @@ const EmailViewButtonBar = ({unread, onMardRead, onMarkUnread, onClose, onDelete
 };
 
 type Props = {
-  email: EMAIL_PROP_TYPE,
+  email: EmailType,
   onClose: Function,
   onDelete: Function,
   onMarkRead: Function,

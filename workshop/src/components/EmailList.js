@@ -1,11 +1,11 @@
 // @flow
 import * as React from 'react';
 import EmailListItem from './EmailListItem';
-import type { EMAIL_PROP_TYPE } from '../utils/constants';
+import type { EmailType } from '../utils/constants';
 import './EmailList.css';
 
 type Props = {
-  emails: Array<EMAIL_PROP_TYPE>,
+  emails: Array<EmailType>,
   onItemDelete: Function,
   onItemSelect: Function,
   onMarkUnread: Function,
