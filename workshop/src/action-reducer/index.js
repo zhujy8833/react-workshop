@@ -1,3 +1,5 @@
+// @flow
+import type { EmailType } from '../utils/constants';
 import {
   addEmail as addEmailRequest,
   getEmails as getEmailsRequest,
@@ -5,9 +7,11 @@ import {
   toggleEmailUnread as toggleEmailUnreadRequest
 } from '../api';
 
-export const addEmail = (newEmail, existingEmails=[]) =>
+export const addEmail = (newEmail: EmailType, existingEmails:Array<Object> = []): Promise<*> =>
   addEmailRequest(newEmail)
-  .then(({success}) => {
+  .then((res = {}) => {
+    const { success } = res;
+
     if (!success) {
       throw new Error('Unable to send email!');
     } else {
@@ -15,20 +19,22 @@ export const addEmail = (newEmail, existingEmails=[]) =>
         {
           ...newEmail,
           id: Date.now(),
-          date: `${new Date()}`,
+          date: `${String(new Date())}`,
           unread: true
         },
         ...existingEmails
       ];
     }
-  });
+  })
 
-export const getEmails = () => getEmailsRequest();
+export const getEmails = (): Promise<*> => getEmailsRequest();
 
-export const deleteEmail = (emailId, existingEmails=[]) =>
-  deleteEmailRequest(emailId).then(({success}) => {
+export const deleteEmail = (emailId: number, existingEmails: Array<EmailType> = []): Promise<*> =>
+  deleteEmailRequest(emailId).then((res = {}) => {
+    const { success } = res;
+
     if (!success) {
-      throw new Error(`Unable to delete email ID# ${emailId}.`);
+      throw new Error(`Unable to delete email ID# ${String(emailId)}.`);
     } else {
       const emailToDeleteIndex = existingEmails.findIndex(({id}) => id === emailId);
       const copyEmails = existingEmails.slice();
@@ -42,11 +48,12 @@ export const deleteEmail = (emailId, existingEmails=[]) =>
     }
   });
 
-  export const toggleEmailUnread = (emailId, unread, existingEmails=[]) =>
-    toggleEmailUnreadRequest(emailId, unread).then(({success}) => {
+  export const toggleEmailUnread = (emailId: number, unread: boolean, existingEmails: Array<EmailType> = []): Promise<*> =>
+    toggleEmailUnreadRequest(emailId, unread).then((res = {}) => {
+      const { success } = res;
       if (!success) {
         throw new Error(
-          `Unable to set email ID# ${emailId} unread state to ${unread}.`
+          `Unable to set email ID# ${String(emailId)} unread state to ${String(unread)}.`
         );
       } else {
         return existingEmails.map(email => email.id === emailId ? {...email, unread } : email );

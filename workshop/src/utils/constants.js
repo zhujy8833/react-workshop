@@ -1,6 +1,11 @@
-import PropTypes from 'prop-types';
+// @flow
 
-export const EMAIL_PROP_TYPE = PropTypes.shape({
-  from: PropTypes.string.isRequired,
-  subject: PropTypes.string.isRequired
-});
+export type EmailType = {
+  id: number,
+  date: ?string,
+  from: string,
+  subject: string,
+  to: string,
+  message: string,
+  unread: ?boolean
+};

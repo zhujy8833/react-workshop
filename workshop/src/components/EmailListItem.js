@@ -1,6 +1,6 @@
-import React, {PureComponent} from 'react';
-import { EMAIL_PROP_TYPE } from '../utils/constants';
-import PropTypes from 'prop-types';
+// @flow
+import * as React from 'react';
+import type { EmailType } from '../utils/constants';
 import './EmailListItem.css';
 import classNames from 'classnames';
 
@@ -18,23 +18,25 @@ const EmailListStatus = ({isSelected, unread, onMarkUnread, onDelete}) => {
     </span>
   );
 };
-export default class EmailListItem extends PureComponent {
-  static propTypes = {
-    email: EMAIL_PROP_TYPE.isRequired,
-    onSelect: PropTypes.func.isRequired,
-    onDeleteEmail: PropTypes.func.isRequired,
-    onMarkUnread: PropTypes.func.isRequired,
-    isSelected: PropTypes.bool
-  };
 
-  _handleClick(e) {
+type Props = {
+  email: EmailType,
+  onSelect: Function,
+  onDeleteEmail: Function,
+  onMarkUnread: Function,
+  isSelected: boolean
+}
+
+export default class EmailListItem extends React.Component<Props> {
+
+  _handleClick = (e: SyntheticEvent<HTMLDivElement>) => {
     e.stopPropagation();
 
     const emailId = this.props.email.id;
     this.props.onSelect(emailId);
   }
 
-  _handleClickDelete(e) {
+  _handleClickDelete = (e: SyntheticEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     const { id: emailId } = this.props.email;
 
@@ -43,7 +45,7 @@ export default class EmailListItem extends PureComponent {
     }
   }
 
-  _handleMarkUnread(e) {
+  _handleMarkUnread = (e: SyntheticEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     const { onMarkUnread, email: { id: emailId } } = this.props;
 
@@ -61,14 +63,14 @@ export default class EmailListItem extends PureComponent {
     });
 
     return (
-      <div className={className} onClick={this._handleClick.bind(this)}>
+      <div className={className} onClick={this._handleClick}>
         <span className="email-list-item__from">{from}</span>
         <span className="email-list-item__subject">{subject}</span>
         <EmailListStatus
           isSelected={isSelected}
           unread={unread}
-          onDelete={this._handleClickDelete.bind(this)}
-          onMarkUnread={this._handleMarkUnread.bind(this)}
+          onDelete={this._handleClickDelete}
+          onMarkUnread={this._handleMarkUnread}
         />
       </div>
     )
