@@ -1,7 +1,6 @@
 // @flow
 import * as React from 'react';
 import EmailListItem from './EmailListItem';
-import PropTypes from 'prop-types';
 import type { EMAIL_PROP_TYPE } from '../utils/constants';
 import './EmailList.css';
 

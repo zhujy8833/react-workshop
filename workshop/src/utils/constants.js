@@ -6,7 +6,7 @@
 // });
 
 export type EMAIL_PROP_TYPE = {
-  id: ?string,
+  id: string,
   date: ?string,
   from: string,
   subject: string,
